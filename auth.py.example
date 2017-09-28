@@ -1,0 +1,5 @@
+
+# used for api authentification
+uid = "some_user_id"
+apikey = "some_apikey"
+tagid = "some_tagid"
