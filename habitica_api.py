@@ -12,7 +12,6 @@ class Habitica:
 
     def add_todo(self, text, tags=[]):
         payload = self._make_task(text, "todo", tags)
-        print(payload)
         return post(_ADD_TASK, data=payload, headers=self.auth_head)
 
     @staticmethod
