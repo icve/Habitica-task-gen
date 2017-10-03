@@ -2,3 +2,4 @@ auth.py
 .idea
 __pycache__
 timetable.ics
+timeslot.log
