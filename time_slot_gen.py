@@ -3,13 +3,14 @@ from auth import apikey, uid
 from time import sleep
 from sys import argv
 from datetime import datetime, timedelta
+from os.path import expanduser
 
 from time import strftime
 log = True
 
 TASK_NAMES = (argv[1], "break")
 LENGTHS = (60 * 20, 60 * 10)
-LOG_FILE = "./timeslot.log"
+LOG_FILE = expanduser("~/wk/habitica_task_gen/timeslot.log")
 
 
 api = Habitica(uid, apikey)
