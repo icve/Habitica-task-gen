@@ -2,6 +2,7 @@ from requests import post, get
 
 _ADD_TASK = "https://habitica.com/api/v3/tasks/user"
 _GET_TAGS = "https://habitica.com/api/v3/tags"
+_GET_TASK = "https://habitica.com/api/v3/tasks/{taskId}"
 
 
 class Habitica:
@@ -12,7 +13,11 @@ class Habitica:
 
     def add_todo(self, text, tags=[]):
         payload = self._make_task(text, "todo", tags)
-        return post(_ADD_TASK, data=payload, headers=self.auth_head)
+        return post(_ADD_TASK, data=payload, headers=self.auth_head).json()
+
+    def get_task(self, tid):
+        return get(_GET_TASK.format(taskId=tid), headers=self.auth_head).json()
+
 
     @staticmethod
     def _make_task(text, typ, tags=[]):
