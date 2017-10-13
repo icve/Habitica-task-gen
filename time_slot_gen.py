@@ -1,7 +1,8 @@
+# TODO print inline
 from habitica_api import Habitica
 from auth import apikey, uid
 from time import sleep
-from sys import argv
+from sys import argv, exit
 from datetime import datetime, timedelta
 from os.path import expanduser
 
@@ -26,12 +27,14 @@ def get_time_after(sec):
 
 
 def sleep_till(dt):
-    """ sleep until the current time is greater than dt, checks every .5 second"""
+    """ sleep until the current time is greater than dt,
+        checks every .5 second"""
     while True:
         now = datetime.today()
         if now > dt:
             break
         sleep(.5)
+
 
 def logtofile(task, length, f=LOG_FILE):
     with open(f, "a") as f:
@@ -39,6 +42,18 @@ def logtofile(task, length, f=LOG_FILE):
         f.write(txt)
 
 
+def wait_checkoff(tid):
+    """ wait till user check off todo, return False when task not found"""
+    while True:
+        tskobj = api.get_task(tid)
+        if not tskobj["success"]:
+            if tskobj["error"] == "NotFound":
+                return False
+            raise NotImplementedError("error: {}".format(tskobj))
+
+        if tskobj["data"]["completed"]:
+            return True
+        sleep(5)
 
 
 for _ in range(4):
@@ -47,5 +62,9 @@ for _ in range(4):
         txt = "{} till {:02d}:{:02d}".format(title, til.hour, til.minute)
         logtofile(title, length)
         print(txt)
-        api.add_todo(txt)
+        tid = api.add_todo(txt)["data"]["id"]
         sleep_till(til)
+        if not wait_checkoff(tid):
+            # taks deleted by user
+            print("task deleted by user, exiting.")
+            exit(0)
