@@ -1,4 +1,10 @@
-# TODO print inline
+# TODO: print inline
+# insert slip entry when user falls behind schdule
+# allow 1 minute for user to switch task
+# insert delemeter entry when starting and ending session
+# cmd/web interface
+
+
 from habitica_api import Habitica
 from auth import apikey, uid
 from time import sleep
@@ -68,3 +74,8 @@ for _ in range(4):
             # taks deleted by user
             print("task deleted by user, exiting.")
             exit(0)
+        # insert slip entry if > 1 min
+        slip = (datetime.today() - til).seconds
+        if slip > 60:
+            logtofile("_slip", slip)
+
