@@ -66,7 +66,6 @@ for _ in range(4):
     for title, length in zip(TASK_NAMES, LENGTHS):
         til = get_time_after(length)
         txt = "{} till {:02d}:{:02d}".format(title, til.hour, til.minute)
-        logtofile(title, length)
         print(txt)
         tid = api.add_todo(txt)["data"]["id"]
         sleep_till(til)
@@ -75,6 +74,7 @@ for _ in range(4):
             print("task deleted by user, exiting.")
             exit(0)
         # insert slip entry if > 1 min
+        logtofile(title, length)
         slip = (datetime.today() - til).seconds
         if slip > 60:
             logtofile("_slip", slip)
