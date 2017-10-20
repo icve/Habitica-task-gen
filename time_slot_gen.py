@@ -3,6 +3,7 @@
 # allow 1 minute for user to switch task
 # insert delemeter entry when starting and ending session
 # cmd/web interface
+# delect current task when user press CTRL-C
 
 
 from habitica_api import Habitica
@@ -10,14 +11,15 @@ from auth import apikey, uid
 from time import sleep
 from sys import argv, exit
 from datetime import datetime, timedelta
-from os.path import expanduser
+from os.path import realpath, dirname, join
 
 from time import strftime
 log = True
 
 TASK_NAMES = (argv[1], "break")
 LENGTHS = (60 * 20, 60 * 10)
-LOG_FILE = expanduser("~/wk/habitica_task_gen/timeslot.log")
+LOG_FILE = join(realpath(dirname(argv[0])), "timeslot.log")
+print(LOG_FILE)
 
 
 api = Habitica(uid, apikey)
