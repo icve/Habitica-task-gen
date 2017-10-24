@@ -38,14 +38,26 @@ class Time_stat:
 
     def get_total(self, start, end):
         """ return a dict with the (task, task total) key value pair"""
-        rlt = {}
+        rlt = {"total": 0}
         for log in self._getlogs():
             if log['time'] > start and log['time'] < end:
                 if log['name'] in rlt:
                     rlt[log['name']] += log['length']
                 else:
                     rlt[log['name']] = log['length']
+                rlt["total"] += log['length']
         return rlt
 
+    @staticmethod
+    def _to_percentage(total_dict):
+        total = total_dict.pop("total")
+        for k in total_dict:
+            total_dict[k] = total_dict[k] / total * 100
+        return total_dict
 
-print(Time_stat("timeslot.log").get_weekly_total())
+print("weekly total:")
+weekly_total = Time_stat("timeslot.log").get_weekly_total()
+print(weekly_total)
+print("percentage")
+weekly_percentage = Time_stat._to_percentage(weekly_total)
+print(weekly_total)
