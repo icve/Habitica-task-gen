@@ -50,14 +50,16 @@ class Time_stat:
 
     @staticmethod
     def _to_percentage(total_dict):
-        total = total_dict.pop("total")
+        total = total_dict["total"]
+        rlt = {}
         for k in total_dict:
-            total_dict[k] = total_dict[k] / total * 100
-        return total_dict
+            rlt[k] = total_dict[k] / total * 100
+        return rlt
 
-print("weekly total:")
 weekly_total = Time_stat("timeslot.log").get_weekly_total()
-print(weekly_total)
-print("percentage")
 weekly_percentage = Time_stat._to_percentage(weekly_total)
-print(weekly_total)
+YELLOW = "\33[93m"
+CLEAR = "\33[0m"
+for k in weekly_percentage:
+    print(f"{YELLOW}{k:>8}{CLEAR}:\t{weekly_total[k]/60}\t{weekly_percentage[k]:.2f}")
+
