@@ -8,17 +8,18 @@
 # delect current task when user press CTRL-C
 # print count down
 # print slip
+    variable to enable/disable log
 """
 
-from habitica_api import Habitica
-from auth import apikey, uid
-from time import sleep
 from sys import argv
 from datetime import datetime, timedelta
 from os.path import realpath, dirname, join
 
-from time import strftime
-log = True
+from time import strftime, sleep
+
+from habitica_api import Habitica
+from auth import apikey, uid
+
 
 TASK_NAMES = (argv[1], "break")
 LENGTHS = (60 * 20, 60 * 10)
@@ -48,8 +49,9 @@ def sleep_till(dt):
         sleep(.5)
 
 
-def logtofile(task, length, f=LOG_FILE):
-    with open(f, "a") as f:
+def logtofile(task, length, file=LOG_FILE):
+    '''write a log to the file specified'''
+    with open(file, "a") as f:
         txt = "{}\t{}\t{}\n".format(strftime("%x %X"), task, length)
         f.write(txt)
 
@@ -67,22 +69,25 @@ def wait_checkoff(tid):
             return True
         sleep(5)
 
+def run():
+    '''main funtion'''
+    for _ in range(4):
+        for title, length in zip(TASK_NAMES, LENGTHS):
+            til = get_time_after(length)
+            txt = "{} till {:02d}:{:02d}".format(title, til.hour, til.minute)
+            print(txt)
+            tid = API.add_todo(txt)["data"]["id"]
+            sleep_till(til)
+            if not wait_checkoff(tid):
+                # taks deleted by user
+                print("task deleted by user, exiting.")
+                exit(0)
+            # insert slip entry if > 1 min
+            logtofile(title, length)
+            slip = (datetime.today() - til).seconds
+            if slip > 60:
+                logtofile("_slip", slip)
+                print(f"slip {int(slip/60)} mins")
 
-for _ in range(4):
-    for title, length in zip(TASK_NAMES, LENGTHS):
-        til = get_time_after(length)
-        txt = "{} till {:02d}:{:02d}".format(title, til.hour, til.minute)
-        print(txt)
-        tid = API.add_todo(txt)["data"]["id"]
-        sleep_till(til)
-        if not wait_checkoff(tid):
-            # taks deleted by user
-            print("task deleted by user, exiting.")
-            exit(0)
-        # insert slip entry if > 1 min
-        logtofile(title, length)
-        slip = (datetime.today() - til).seconds
-        if slip > 60:
-            logtofile("_slip", slip)
-            print(f"slip {int(slip/60)} mins")
-
+if __name__ == "__main__":
+    run()
