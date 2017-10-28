@@ -1,15 +1,19 @@
-# TODO: print inline
-# insert slip entry when user falls behind schdule
+#!/usr/bin/env python3
+
+"""
+ TODO: print inline
 # allow 1 minute for user to switch task
 # insert delemeter entry when starting and ending session
 # cmd/web interface
 # delect current task when user press CTRL-C
-
+# print count down
+# print slip
+"""
 
 from habitica_api import Habitica
 from auth import apikey, uid
 from time import sleep
-from sys import argv, exit
+from sys import argv
 from datetime import datetime, timedelta
 from os.path import realpath, dirname, join
 
@@ -22,7 +26,7 @@ LOG_FILE = join(realpath(dirname(argv[0])), "timeslot.log")
 print(LOG_FILE)
 
 
-api = Habitica(uid, apikey)
+API = Habitica(uid, apikey)
 
 
 def get_time_after(sec):
@@ -53,7 +57,7 @@ def logtofile(task, length, f=LOG_FILE):
 def wait_checkoff(tid):
     """ wait till user check off todo, return False when task not found"""
     while True:
-        tskobj = api.get_task(tid)
+        tskobj = API.get_task(tid)
         if not tskobj["success"]:
             if tskobj["error"] == "NotFound":
                 return False
@@ -69,7 +73,7 @@ for _ in range(4):
         til = get_time_after(length)
         txt = "{} till {:02d}:{:02d}".format(title, til.hour, til.minute)
         print(txt)
-        tid = api.add_todo(txt)["data"]["id"]
+        tid = API.add_todo(txt)["data"]["id"]
         sleep_till(til)
         if not wait_checkoff(tid):
             # taks deleted by user
@@ -80,4 +84,5 @@ for _ in range(4):
         slip = (datetime.today() - til).seconds
         if slip > 60:
             logtofile("_slip", slip)
+            print(f"slip {int(slip/60)} mins")
 
