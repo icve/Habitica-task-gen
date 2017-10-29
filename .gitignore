@@ -3,3 +3,4 @@ auth.py
 __pycache__
 timetable.ics
 timeslot.log
+.vscode
