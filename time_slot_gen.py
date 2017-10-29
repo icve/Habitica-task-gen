@@ -26,8 +26,15 @@ LENGTHS = (60 * 20, 60 * 10)
 LOG_FILE = join(realpath(dirname(argv[0])), "timeslot.log")
 print(LOG_FILE)
 
+COLOR = {"green": "\033[32m",
+         "clear": "\033[0m"
+         }
 
 API = Habitica(uid, apikey)
+
+def printi(s):
+    '''print string inline'''
+    print(s, end='\r')
 
 
 def get_time_after(sec):
@@ -44,6 +51,7 @@ def sleep_till(dt):
         checks every .5 second"""
     while True:
         now = datetime.today()
+        printi(f"{COLOR['green']}{(dt - now).total_seconds() / 60:.2f} mins remaining.{COLOR['clear']}")
         if now > dt:
             break
         sleep(.5)
