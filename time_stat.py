@@ -51,6 +51,8 @@ class Time_stat:
     @staticmethod
     def _to_percentage(total_dict):
         total = total_dict["total"]
+        if not total:
+            return {"total": 100.0}
         rlt = {}
         for k in total_dict:
             rlt[k] = total_dict[k] / total * 100
