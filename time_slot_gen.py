@@ -26,7 +26,7 @@ LENGTHS = (60 * 20, 60 * 10)
 LOG_FILE = join(realpath(dirname(argv[0])), "timeslot.log")
 print(LOG_FILE)
 
-COLOR = {"green": "\033[32m",
+COLOR = {"green": "\033[92m",
          "clear": "\033[0m"
          }
 
