@@ -63,5 +63,5 @@ weekly_percentage = Time_stat._to_percentage(weekly_total)
 YELLOW = "\33[93m"
 CLEAR = "\33[0m"
 for k in weekly_percentage:
-    print(f"{YELLOW}{k:>8}{CLEAR}:\t{weekly_total[k]/60}\t{weekly_percentage[k]:.2f}")
+    print(f"{YELLOW}{k:>8}{CLEAR}:\t{round(weekly_total[k]/60)}\t{weekly_percentage[k]:.2f}")
 
