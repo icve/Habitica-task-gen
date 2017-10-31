@@ -6,9 +6,10 @@
 # insert delemeter entry when starting and ending session
 # cmd/web interface
 # delect current task when user press CTRL-C
-# print count down
 # print slip
-    variable to enable/disable log
+# variable to enable/disable log
+# prevent line printing on top of each other
+
 """
 
 from sys import argv
