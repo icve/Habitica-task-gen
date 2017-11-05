@@ -2,7 +2,6 @@
 
 """
  TODO: print inline
-# allow 1 minute for user to switch task
 # insert delemeter entry when starting and ending session
 # cmd/web interface
 # delect current task when user press CTRL-C
@@ -15,8 +14,10 @@
 from sys import argv
 from datetime import datetime, timedelta
 from os.path import realpath, dirname, join
+from signal import signal, SIGINT
 
 from time import strftime, sleep
+import sys
 
 from habitica_api import Habitica
 from auth import apikey, uid
@@ -31,7 +32,17 @@ COLOR = {"green": "\033[92m",
          "clear": "\033[0m"
          }
 
+def exit_and_delete(signal, frame):
+    if last_task_id:
+        print("\ndeleting last task")
+        API.delete_task(last_task_id)
+    print("exiting")
+    sys.exit(0)
+
+
 API = Habitica(uid, apikey)
+
+last_task_id = None
 
 def printi(s):
     '''print string inline'''
@@ -80,14 +91,16 @@ def wait_checkoff(tid):
 
 def run():
     '''main funtion'''
+    signal(SIGINT, exit_and_delete)
     for _ in range(4):
         for title, length in zip(TASK_NAMES, LENGTHS):
             til = get_time_after(length)
             txt = "{} till {:02d}:{:02d}".format(title, til.hour, til.minute)
             print(txt)
-            tid = API.add_todo(txt)["data"]["id"]
+            global last_task_id
+            last_task_id = API.add_todo(txt)["data"]["id"]
             sleep_till(til)
-            if not wait_checkoff(tid):
+            if not wait_checkoff(last_task_id):
                 # taks deleted by user
                 print("task deleted by user, exiting.")
                 exit(0)
