@@ -22,6 +22,8 @@ import sys
 from habitica_api import Habitica
 from auth import apikey, uid
 
+if len(argv) == 1:
+    argv.append(input("enter your task below\n"))
 
 TASK_NAMES = (argv[1], "break")
 LENGTHS = (60 * 20, 60 * 10)
