@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
 """
- TODO: print inline
+ TODO
 # insert delemeter entry when starting and ending session
 # cmd/web interface
-# delect current task when user press CTRL-C
-# print slip
 # variable to enable/disable log
-# prevent line printing on top of each other
+# show recent tasks
+# write to database
 
 """
 
@@ -15,6 +14,8 @@ from sys import argv
 from datetime import datetime, timedelta
 from os.path import realpath, dirname, join
 from signal import signal, SIGINT
+from urllib.request import urlopen
+from subprocess import check_output
 
 from time import strftime, sleep
 import sys
@@ -30,6 +31,8 @@ LENGTHS = (60 * 20, 60 * 10)
 LOG_FILE = join(realpath(dirname(argv[0])), "timeslot.log")
 print(LOG_FILE)
 
+NOTIFY_URL = "http://192.168.1.4:5001/"
+
 COLOR = {"green": "\033[92m",
          "clear": "\033[0m"
          }
@@ -38,6 +41,7 @@ def exit_and_delete(signal, frame):
     if last_task_id:
         print("\ndeleting last task")
         API.delete_task(last_task_id)
+    urlopen(NOTIFY_URL + "f")
     print("exiting")
     sys.exit(0)
 
@@ -67,6 +71,8 @@ def sleep_till(dt):
         now = datetime.today()
         printi(f"{COLOR['green']}{(dt - now).total_seconds() / 60:.2f} mins remaining.{COLOR['clear']}")
         if now > dt:
+            column = check_output(("stty", "size")).split()[1]
+            printi(" " * int(column))
             break
         sleep(.5)
 
@@ -102,10 +108,13 @@ def run():
             global last_task_id
             last_task_id = API.add_todo(txt)["data"]["id"]
             sleep_till(til)
+            urlopen(NOTIFY_URL + "o")
             if not wait_checkoff(last_task_id):
                 # taks deleted by user
                 print("task deleted by user, exiting.")
+                urlopen(NOTIFY_URL + "f")
                 exit(0)
+            urlopen(NOTIFY_URL + "f")
             # insert slip entry if > 1 min
             logtofile(title, length)
             slip = (datetime.today() - til).seconds
