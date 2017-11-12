@@ -7,8 +7,10 @@ _DELETE_TASK_BY_ID = "https://habitica.com/api/v3/tasks/{taskId}"
 
 
 class Habitica:
-    def __init__(self, uid, apikey):
-        self.uid = uid
+    def __init__(self, uid=None, apikey=None):
+        if uid is None:
+            from auth import uid, apikey
+
         self.auth_head = {"x-api-user": uid,
                           "x-api-key": apikey}
 
