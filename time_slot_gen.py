@@ -27,13 +27,15 @@ if len(argv) == 1:
     argv.append(input("enter your task below\n"))
 
 TASK_NAMES = (argv[1], "break")
-LENGTHS = (60 * 20, 60 * 10)
+LENGTHS = (20, 5)
+LENGTHS = [60 * itm for itm in LENGTHS]
 LOG_FILE = join(realpath(dirname(argv[0])), "timeslot.log")
 print(LOG_FILE)
 
 NOTIFY_URL = "http://192.168.1.4:5001/"
 
 COLOR = {"green": "\033[92m",
+         "cyan": "\033[96m",
          "clear": "\033[0m"
          }
 
@@ -103,10 +105,17 @@ def run():
     for _ in range(4):
         for title, length in zip(TASK_NAMES, LENGTHS):
             til = get_time_after(length)
-            txt = "{} till {:02d}:{:02d}".format(title, til.hour, til.minute)
+            txt = "{}{}{} till {:02d}:{:02d}".format(COLOR['cyan'],
+                                                      title,
+                                                      COLOR['clear'],
+                                                      til.hour,
+                                                      til.minute)
+            todo = "{} till {:02d}:{:02d}".format(title,
+                                                  til.hour,
+                                                  til.minute)
             print(txt)
             global last_task_id
-            last_task_id = API.add_todo(txt)["data"]["id"]
+            last_task_id = API.add_todo(todo)["data"]["id"]
             sleep_till(til)
             urlopen(NOTIFY_URL + "o")
             if not wait_checkoff(last_task_id):
