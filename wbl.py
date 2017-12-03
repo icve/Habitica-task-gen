@@ -27,12 +27,11 @@ if len(argv) == 1:
     argv.append(input("enter your task below\n"))
 
 TASK_NAMES = (argv[1], "break")
-LENGTHS = (20, 5)
+LENGTHS = (20, 10)
 LENGTHS = [60 * itm for itm in LENGTHS]
 LOG_FILE = join(realpath(dirname(argv[0])), "timeslot.log")
 print(LOG_FILE)
 
-NOTIFY_URL = "http://192.168.1.4:5001/"
 
 COLOR = {"green": "\033[92m",
          "cyan": "\033[96m",
@@ -43,7 +42,6 @@ def exit_and_delete(signal, frame):
     if last_task_id:
         print("\ndeleting last task")
         API.delete_task(last_task_id)
-    urlopen(NOTIFY_URL + "f")
     print("exiting")
     sys.exit(0)
 
@@ -117,13 +115,10 @@ def run():
             global last_task_id
             last_task_id = API.add_todo(todo)["data"]["id"]
             sleep_till(til)
-            urlopen(NOTIFY_URL + "o")
             if not wait_checkoff(last_task_id):
                 # taks deleted by user
                 print("task deleted by user, exiting.")
-                urlopen(NOTIFY_URL + "f")
                 exit(0)
-            urlopen(NOTIFY_URL + "f")
             # insert slip entry if > 1 min
             logtofile(title, length)
             slip = (datetime.today() - til).seconds
